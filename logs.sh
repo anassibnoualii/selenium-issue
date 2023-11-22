@@ -12,14 +12,14 @@ while true; do
     echo "Inspecting and copying log file for container: $container_id"
 
     # Copy the log file from the container's LogPath to a temporary location
-    temp_log=$(docker logs "$container_id")
+    temp_log=$(docker inspect --format='{{.LogPath}}' "$container_id")
     # Check if the log file contains "Failed to run"
     if grep -q "Failed to run" "$temp_log"; then
       echo "Appending -error to the log file: $container_id"
-      echo "$temp_log" > "$log_file_error"
+      cp "$temp_log"  "$log_file_error"
     else
       echo "Renaming the log file: $container_id"
-      echo "$temp_log" > "$log_file"
+      cp "$temp_log"  "$log_file"
     fi
   done
 done
