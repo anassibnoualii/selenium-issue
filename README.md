@@ -91,6 +91,6 @@ video-image = "selenium/video:ffmpeg-6.0-20231110"
 
 
 
-## Extract the logs of the running containers (Optional)
+## Extract the logs of the running browsers containers (Optional)
 Run the following script [log.sh](logs.sh). 
 It gets the logs off all containers running on port 5900  and redirect the logs with  ````Failed to run````  into error file (container-id-error.log)
