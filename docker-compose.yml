@@ -1,0 +1,38 @@
+version: "3"
+services:
+  node-docker:
+    image: selenium/node-docker:${SELENIUM_DOCKER_TAG}
+    container_name: node-docker
+    volumes:
+      - ./assets:/opt/selenium/assets
+      - ./config.toml:/opt/bin/config.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  selenium-hub:
+    image: selenium/hub:${SELENIUM_DOCKER_TAG}
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - SE_SESSION_REQUEST_TIMEOUT=${SESSION_REQUEST_TIMEOUT}
+  python:
+    image: python:3.12.0-alpine3.17
+    container_name: python
+    depends_on:
+      - selenium-hub
+    volumes:
+      - ./run-tests.sh:/run-tests.sh
+      - ./tests:/tests
+    command: sh -c "apk update && apk add bash && pip install selenium==4.15.2 pip install robotframework-seleniumlibrary==6.1.3 && chmod +x run-tests.sh && bash run-tests.sh  && tail -f /dev/null"
+
+networks:
+  default:
+    name: grid
